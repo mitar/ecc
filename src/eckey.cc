@@ -6,6 +6,7 @@
 #include <openssl/ec.h>
 #include <openssl/ecdsa.h>
 #include <openssl/ecdh.h>
+#include <openssl/err.h>
 
 #include "eckey.h"
 
@@ -209,7 +210,7 @@ NAN_METHOD(ECKey::VerifySignature) {
 	unsigned int signature_len = Buffer::Length(signature);
 	int result = ECDSA_verify(0, digest_data, digest_len, signature_data, signature_len, eckey->mKey);
 	if (result == -1) {
-		return NanThrowError("ECDSA_verify");
+		return NanThrowError(ERR_error_string(ERR_get_error(), NULL));
 	} else if (result == 0) {
 		NanReturnValue(NanNew<Boolean>(false));
 	} else if (result == 1) {
